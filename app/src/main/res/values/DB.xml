@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="DB_KEY_SERVER_TOKEN">com.freezybits.jiwanala.server_token</string>
+</resources>
