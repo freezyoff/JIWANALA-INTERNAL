@@ -4,11 +4,13 @@ import com.freezybits.jiwanala.foundation.storage.DBManager;
 
 public class ClientStateManager {
     private static ClientStateManager manager;
+
     private DBManager dbManager;
     private ClientLoginState clientLoginState;
 
     public ClientStateManager(DBManager dbManager) {
         this.dbManager = dbManager;
+        this.clientLoginState = new ClientLoginState(this.dbManager);
     }
 
     public static ClientStateManager getInstance(DBManager dbManager) {
@@ -18,8 +20,6 @@ public class ClientStateManager {
     }
 
     public ClientLoginState getClientLoginState() {
-        if (this.clientLoginState == null)
-            this.clientLoginState = new ClientLoginState(this.dbManager);
         return this.clientLoginState;
     }
 }

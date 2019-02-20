@@ -11,12 +11,12 @@ public abstract class ClientState {
         this.currentState = defaultState;
     }
 
-    public int getCurrentState() {
+    public int getState() {
         return currentState;
     }
 
     public void setState(int state) {
-        int oldState = this.getCurrentState();
+        int oldState = this.getState();
         this.currentState = state;
         this.fireStateChange(oldState, currentState);
     }
@@ -35,6 +35,8 @@ public abstract class ClientState {
     }
 
     public void fireStateChange(int oldState, int newState) {
+        if (this.clientStateListenerList == null) return;
+
         for (ClientStateListener sl : this.clientStateListenerList) {
             sl.stateChange(sl.getClass(), oldState, newState);
         }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- shared preference name-->
+    <string name="db_key_name">com.freezybits.jiwanala.db</string>
+
+    <!-- key name -->
+    <string name="db_key_server_token">com.freezybits.jiwanala.server_token</string>
+</resources>

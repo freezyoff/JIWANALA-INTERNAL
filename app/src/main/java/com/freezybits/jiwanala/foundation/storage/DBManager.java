@@ -1,158 +1,157 @@
 package com.freezybits.jiwanala.foundation.storage;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.freezybits.jiwanala.BuildConfig;
+import com.freezybits.jiwanala.R;
 
 import java.util.Map;
 import java.util.Set;
 
 public class DBManager {
     private static DBManager instance;
-    protected Context context;
-    SharedPreferences preferences;
+    protected Application application;
+    protected SharedPreferences sharedPreferences;
 
-    DBManager(Context context, SharedPreferences preferences) {
-        this.context = context;
-        this.preferences = preferences;
+    DBManager(Application app) {
+        this.application = app;
     }
 
-    public static DBManager getInstance(Context context) {
+    public static DBManager getInstance(Application app) {
         if (DBManager.instance == null) {
-            SharedPreferences shared = context.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
-            DBManager.instance = new DBManager(context, shared);
+            DBManager.instance = new DBManager(app);
         }
         return DBManager.instance;
     }
 
+    public Context getContext() {
+        return this.application.getApplicationContext();
+    }
+
     protected String getContextStringResourceKey(int key) {
-        return context.getString(key);
+        return this.application.getString(key);
     }
 
-    public SharedPreferences getSharedPreference() {
-        return this.preferences;
+    protected SharedPreferences getSharedPreferences() {
+        if (this.sharedPreferences == null) {
+            this.sharedPreferences = this.application.getSharedPreferences(
+                    getContextStringResourceKey(R.string.db_key_name),
+                    this.getContext().MODE_PRIVATE
+            );
+        }
+        return this.sharedPreferences;
     }
 
-    public SharedPreferences.Editor getPreferenceEditor() {
-        return this.preferences.edit();
+    public boolean addPreference(String key, String value) {
+        SharedPreferences.Editor edit = this.getSharedPreferences().edit();
+        edit.putString(key, value);
+        return edit.commit();
     }
 
-    public void addPreference(String key, String value) {
-        this.getPreferenceEditor().putString(key, value);
+    public boolean addPreference(int key, String value) {
+        return this.addPreference(getContextStringResourceKey(key), value);
     }
 
-    public void addPreference(int key, String value) {
-        this.getPreferenceEditor().putString(getContextStringResourceKey(key), value);
+    public boolean addPreference(String key, Boolean value) {
+        SharedPreferences.Editor edit = this.getSharedPreferences().edit();
+        edit.putBoolean(key, value);
+        return edit.commit();
     }
 
-    public void addPreference(String key, Boolean value) {
-        this.getPreferenceEditor().putBoolean(key, value);
+    public boolean addPreference(int key, Boolean value) {
+        return this.addPreference(getContextStringResourceKey(key), value);
     }
 
-    public void addPreference(int key, Boolean value) {
-        this.getPreferenceEditor().putBoolean(getContextStringResourceKey(key), value);
+    public boolean addPreference(String key, Float value) {
+        SharedPreferences.Editor edit = this.getSharedPreferences().edit();
+        edit.putFloat(key, value);
+        return edit.commit();
     }
 
-    public void addPreference(String key, Float value) {
-        this.getPreferenceEditor().putFloat(key, value);
+    public boolean addPreference(int key, Float value) {
+        return this.addPreference(getContextStringResourceKey(key), value);
     }
 
-    public void addPreference(int key, Float value) {
-        this.getPreferenceEditor().putFloat(getContextStringResourceKey(key), value);
+    public boolean addPreference(String key, Integer value) {
+        SharedPreferences.Editor edit = this.getSharedPreferences().edit();
+        edit.putInt(key, value);
+        return edit.commit();
     }
 
-    public void addPreference(String key, Integer value) {
-        this.getPreferenceEditor().putInt(key, value);
+    public boolean addPreference(int key, Integer value) {
+        return this.addPreference(getContextStringResourceKey(key), value);
     }
 
-    public void addPreference(int key, Integer value) {
-        this.getPreferenceEditor().putInt(getContextStringResourceKey(key), value);
+    public boolean addPreference(String key, Long value) {
+        SharedPreferences.Editor edit = this.getSharedPreferences().edit();
+        edit.putLong(key, value);
+        return edit.commit();
     }
 
-    public void addPreference(String key, Long value) {
-        this.getPreferenceEditor().putLong(key, value);
+    public boolean addPreference(int key, Long value) {
+        return this.addPreference(getContextStringResourceKey(key), value);
     }
 
-    public void addPreference(int key, Long value) {
-        this.getPreferenceEditor().putLong(getContextStringResourceKey(key), value);
+    public boolean addPreference(String key, Set<String> value) {
+        SharedPreferences.Editor edit = this.getSharedPreferences().edit();
+        edit.putStringSet(key, value);
+        return edit.commit();
     }
 
-    public void addPreference(String key, Set<String> value) {
-        this.getPreferenceEditor().putStringSet(key, value);
-    }
-
-    public void addPreference(int key, Set<String> value) {
-        this.getPreferenceEditor().putStringSet(getContextStringResourceKey(key), value);
+    public boolean addPreference(int key, Set<String> value) {
+        return this.addPreference(getContextStringResourceKey(key), value);
     }
 
     public String getPreference(String key, String defValue) {
-        return this.getSharedPreference().getString(key, defValue);
+        return this.getSharedPreferences().getString(key, defValue);
     }
 
     public String getPreference(int key, String defValue) {
-        return this.getSharedPreference().getString(
-                getContextStringResourceKey(key),
-                defValue
-        );
+        return this.getPreference(getContextStringResourceKey(key), defValue);
     }
 
     public Boolean getPreference(String key, Boolean defValue) {
-        return this.getSharedPreference().getBoolean(key, defValue);
+        return this.getSharedPreferences().getBoolean(key, defValue);
     }
 
     public Boolean getPreference(int key, Boolean defValue) {
-        return this.getSharedPreference().getBoolean(
-                getContextStringResourceKey(key),
-                defValue
-        );
+        return this.getPreference(getContextStringResourceKey(key), defValue);
     }
 
     public Float getPreference(String key, Float defValue) {
-        return this.getSharedPreference().getFloat(key, defValue);
+        return this.getSharedPreferences().getFloat(key, defValue);
     }
 
     public Float getPreference(int key, Float defValue) {
-        return this.getSharedPreference().getFloat(
-                getContextStringResourceKey(key),
-                defValue
-        );
+        return this.getPreference(getContextStringResourceKey(key), defValue);
     }
 
     public Integer getPreference(String key, Integer defValue) {
-        return this.getSharedPreference().getInt(key, defValue);
+        return this.getSharedPreferences().getInt(key, defValue);
     }
 
     public Integer getPreference(int key, Integer defValue) {
-        return this.getSharedPreference().getInt(
-                getContextStringResourceKey(key),
-                defValue
-        );
+        return this.getPreference(getContextStringResourceKey(key), defValue);
     }
 
     public Long getPreference(String key, Long defValue) {
-        return this.getSharedPreference().getLong(key, defValue);
+        return this.getSharedPreferences().getLong(key, defValue);
     }
 
     public Long getPreference(int key, Long defValue) {
-        return this.getSharedPreference().getLong(
-                getContextStringResourceKey(key),
-                defValue
-        );
+        return this.getPreference(getContextStringResourceKey(key), defValue);
     }
 
     public Set<String> getPreference(String key, Set<String> defValue) {
-        return this.getSharedPreference().getStringSet(key, defValue);
+        return this.getSharedPreferences().getStringSet(key, defValue);
     }
 
     public Set<String> getPreference(int key, Set<String> defValue) {
-        return this.getSharedPreference().getStringSet(
-                getContextStringResourceKey(key),
-                defValue
-        );
+        return this.getPreference(getContextStringResourceKey(key), defValue);
     }
 
     public Map<String, ?> getPreferences() {
-        return this.getSharedPreference().getAll();
+        return this.getSharedPreferences().getAll();
     }
 }

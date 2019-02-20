@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">JIWANALA</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_dashboard">Dashboard</string>
+
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>

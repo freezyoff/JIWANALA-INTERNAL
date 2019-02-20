@@ -17,6 +17,7 @@ public class ServerResponse {
     ArrayList<ServerResponseListener> listeners;
     String responseString;
     int responseCode;
+    ServerResponseParameters serverResponseParameters;
 
     public ServerResponse() {
         this.listeners = new ArrayList<>();
@@ -53,7 +54,7 @@ public class ServerResponse {
             this.responseString += line;
         }
         br.close();
-        Log.d("jiwanala", "ServerConnection.readHttpResponse() -> response :" + this.responseString);
+        //Log.d("jiwanala", "ServerConnection.readHttpResponse() -> response :" + this.responseString);
     }
 
     public void addListener(ServerResponseListener listener) {
@@ -62,7 +63,11 @@ public class ServerResponse {
 
     public void fireListener() {
         for (ServerResponseListener li : this.listeners) {
-            li.serverResponseAccepted(this.getResponseString(), this.getResponseJSON());
+            li.serverResponseAccepted(
+                    this.responseCode,
+                    new ServerResponseParameters(this.getResponseString(), this.getResponseJSON())
+            );
         }
     }
+
 }

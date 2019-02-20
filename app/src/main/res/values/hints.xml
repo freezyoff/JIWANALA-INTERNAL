@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="nip">NIP / Email</string>
-    <string name="password">Kata Sandi</string>
-    <string name="sign_in">Masuk</string>
+    <!-- text hints -->
+    <string name="tx_nip">NIP / Email</string>
+    <string name="tx_password">Kata Sandi</string>
+
+    <!-- button -->
+    <string name="btn_sign_in">Masuk</string>
+    <string name="btn_close">Tutup</string>
+
+    <!-- error -->
+    <string name="title_error">Kesalahan</string>
+
+    <!-- login error -->
+    <string name="errors_login_server_error">Kesalahan Server. Coba kembali beberapa saat.</string>
 </resources>

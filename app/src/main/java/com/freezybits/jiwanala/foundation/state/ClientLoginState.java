@@ -12,7 +12,7 @@ public class ClientLoginState extends ClientState {
     ClientLoginState(DBManager manager) {
         super(SINGED_OUT);
         this.dbManager = manager;
-        String serverToken = dbManager.getPreference(R.string.DB_KEY_SERVER_TOKEN, "");
+        String serverToken = dbManager.getPreference(R.string.db_key_server_token, "");
         if (serverToken != "") {
             this.setState(SIGNED_IN);
         }

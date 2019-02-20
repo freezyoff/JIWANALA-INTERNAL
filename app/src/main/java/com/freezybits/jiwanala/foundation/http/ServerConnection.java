@@ -66,6 +66,7 @@ public class ServerConnection extends AsyncTask<ServerConnection, Integer, Serve
                 this.getRequestParameters().write(connection);
             }
 
+            Log.d("jiwanala", "ServerConnection.connect() : " + this.url.toString());
             this.getServerResponse().read(connection);
             connection.disconnect();
             Log.d("jiwanala", "ServerConnection.disconnect()");
