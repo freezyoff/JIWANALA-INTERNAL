@@ -43,6 +43,7 @@ public class ServerResponse {
     }
 
     public void read(HttpsURLConnection connection) throws IOException {
+
         this.responseCode = connection.getResponseCode();
         Log.d("jiwanala", "ServerConnection.connect() -> responseCode :" + this.responseCode);
 
@@ -54,7 +55,7 @@ public class ServerResponse {
             this.responseString += line;
         }
         br.close();
-        //Log.d("jiwanala", "ServerConnection.readHttpResponse() -> response :" + this.responseString);
+        Log.d("jiwanala", "ServerConnection.readHttpResponse() -> response :" + this.responseString);
     }
 
     public void addListener(ServerResponseListener listener) {

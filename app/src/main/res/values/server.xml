@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="server_url_login">https://service.jiwa-nala.org/api/login</string>
+    <string name="server_url_relogin">https://service.jiwa-nala.org/api/relogin</string>
+    <string name="server_url_attendance_histories">https://my.jiwa-nala.org/api/android/attendance/histories</string>
 </resources>

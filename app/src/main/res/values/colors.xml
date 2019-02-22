@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="primary_material_dark_1">#212121</color>
+    <color name="brand_name">#1c1c1c</color>
+    <color name="brand_tag">#393939</color>
+
+    <color name="accent_material_light">#4070ff</color>
+    <color name="primary_material_light">#a7a7a7</color>
+    <color name="background_material_light">#fafafa</color>
+
+    <!-- Table Row Color -->
+    <color name="table_row_holiday">#DDFF1500</color>
+    <color name="table_row_consent">#4AFF0000</color>
+    <color name="table_row_finger_summary">#F57F17</color>
+    <color name="table_row_zebra">#FFFFFFFF</color>
 </resources>

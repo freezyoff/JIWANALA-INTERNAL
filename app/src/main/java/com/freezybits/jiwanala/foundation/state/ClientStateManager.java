@@ -6,11 +6,11 @@ public class ClientStateManager {
     private static ClientStateManager manager;
 
     private DBManager dbManager;
-    private ClientLoginState clientLoginState;
+    private ClientSignInState clientSignInState;
 
     public ClientStateManager(DBManager dbManager) {
         this.dbManager = dbManager;
-        this.clientLoginState = new ClientLoginState(this.dbManager);
+        this.clientSignInState = ClientSignInState.getInstance(this.dbManager);
     }
 
     public static ClientStateManager getInstance(DBManager dbManager) {
@@ -19,7 +19,7 @@ public class ClientStateManager {
         return ClientStateManager.manager;
     }
 
-    public ClientLoginState getClientLoginState() {
-        return this.clientLoginState;
+    public ClientSignInState getClientSignInState() {
+        return this.clientSignInState;
     }
 }

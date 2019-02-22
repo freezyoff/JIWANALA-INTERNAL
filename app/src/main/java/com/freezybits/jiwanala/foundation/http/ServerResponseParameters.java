@@ -67,7 +67,16 @@ public class ServerResponseParameters {
         }
     }
 
-    public ServerResponseParameters getJSONObject(String key) {
+    public JSONObject getJSONObject(String key) {
+        try {
+            return json.getJSONObject(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ServerResponseParameters getJSONParameters(String key) {
         try {
             JSONObject obj = json.getJSONObject(key);
             return new ServerResponseParameters(obj.toString(), obj);
@@ -84,5 +93,12 @@ public class ServerResponseParameters {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ServerResponseParameters{" +
+                "json=" + json.toString() +
+                '}';
     }
 }

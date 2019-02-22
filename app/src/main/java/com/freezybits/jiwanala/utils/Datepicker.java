@@ -11,10 +11,13 @@ public class Datepicker {
     public static DatePickerDialog createDatepicker(Context context,
                                                     View[] trigger,
                                                     DatePickerDialog.OnDateSetListener listener) {
-        return createDatepicker(context, trigger, listener,
-                Calendar.getInstance().get(Calendar.YEAR),
-                Calendar.getInstance().get(Calendar.MONTH),
-                Calendar.getInstance().get(Calendar.DATE));
+        Calendar cl = Calendar.getInstance();
+        return createDatepicker(context,
+                trigger,
+                listener,
+                cl.get(Calendar.YEAR),
+                cl.get(Calendar.MONTH),
+                cl.get(Calendar.DATE));
     }
 
     public static DatePickerDialog createDatepicker(Context context,
@@ -24,6 +27,17 @@ public class Datepicker {
                                                     int month,
                                                     int date) {
         return createDatepicker(context, 0, trigger, listener, year, month, date);
+    }
+
+    public static DatePickerDialog createDatepicker(Context context,
+                                                    int themeResId,
+                                                    View[] trigger,
+                                                    DatePickerDialog.OnDateSetListener listener) {
+        Calendar cl = Calendar.getInstance();
+        return createDatepicker(context, themeResId, trigger, listener, cl.get(Calendar.YEAR),
+                cl.get(Calendar.MONTH),
+                cl.get(Calendar.DATE));
+
     }
 
     public static DatePickerDialog createDatepicker(Context context,

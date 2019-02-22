@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/material">
+        android:theme="@style/jn_light">
         <activity
             android:name=".activity.ActivityLogin"
             android:label="@string/title_activity_login">

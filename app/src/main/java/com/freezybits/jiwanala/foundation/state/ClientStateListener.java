@@ -1,13 +1,12 @@
 package com.freezybits.jiwanala.foundation.state;
 
 public interface ClientStateListener {
-    void stateChange(Class cls, int oldState, int newState);
-
     /**
-     * Test if this state is equal to given state
+     * listener state change
      *
-     * @param state integer state
-     * @return True if equal, false other wise
+     * @param cls
+     * @param oldState
+     * @param newState
      */
-    boolean isState(int state);
+    void stateChange(Class cls, int oldState, int newState);
 }

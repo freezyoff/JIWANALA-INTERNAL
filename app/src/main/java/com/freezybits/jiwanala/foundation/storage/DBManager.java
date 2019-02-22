@@ -14,7 +14,7 @@ public class DBManager {
     protected Application application;
     protected SharedPreferences sharedPreferences;
 
-    DBManager(Application app) {
+    public DBManager(Application app) {
         this.application = app;
     }
 

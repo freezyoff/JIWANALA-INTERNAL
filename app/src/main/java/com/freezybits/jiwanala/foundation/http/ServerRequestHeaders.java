@@ -2,6 +2,7 @@ package com.freezybits.jiwanala.foundation.http;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,11 +25,10 @@ public class ServerRequestHeaders {
             HttpURLConnection connection,
             ServerRequestParameters parameters) throws UnsupportedEncodingException {
 
-        connection.setRequestProperty("Content-Length",
-                String.valueOf(
-                        parameters.encodeRequestParameters().getBytes("UTF-8").length
-                )
-        );
+        int length = parameters.encodeRequestParameters().getBytes(StandardCharsets.UTF_8).length;
+        if (length > 0) {
+            connection.setRequestProperty("Content-Length", String.valueOf(length));
+        }
         for (Map.Entry<String, String> entry : this.properties.entrySet()) {
             connection.setRequestProperty(entry.getKey(), entry.getValue());
         }

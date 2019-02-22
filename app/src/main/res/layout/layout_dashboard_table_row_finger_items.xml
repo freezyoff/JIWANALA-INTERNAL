@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:width="70dp"
+                    android:paddingLeft="@dimen/activity_horizontal_margin_small"
+                    android:paddingTop="@dimen/activity_horizontal_margin_small"
+                    android:paddingBottom="@dimen/activity_horizontal_margin_small"
+                    android:text="Masuk :" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_horizontal_margin_small"
+                    android:text="06:00:00" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:width="70dp"
+                    android:paddingLeft="@dimen/activity_horizontal_margin_small"
+                    android:paddingTop="@dimen/activity_horizontal_margin_small"
+                    android:paddingBottom="@dimen/activity_horizontal_margin_small"
+                    android:text="Keluar 1 :" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_horizontal_margin_small"
+                    android:text="06:00:00" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:width="70dp"
+                    android:paddingLeft="@dimen/activity_horizontal_margin_small"
+                    android:paddingTop="@dimen/activity_horizontal_margin_small"
+                    android:paddingBottom="@dimen/activity_horizontal_margin_small"
+                    android:text="Keluar 2 :" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_horizontal_margin_small"
+                    android:text="06:00:00" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:width="70dp"
+                    android:paddingLeft="@dimen/activity_horizontal_margin_small"
+                    android:paddingTop="@dimen/activity_horizontal_margin_small"
+                    android:paddingBottom="@dimen/activity_horizontal_margin_small"
+                    android:text="Keluar 3 :" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_horizontal_margin_small"
+                    android:text="06:00:00" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin_small"
+            android:text="Terlambat 5 menit" />
+    </LinearLayout>
+</LinearLayout>

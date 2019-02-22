@@ -1,5 +1,6 @@
 package com.freezybits.jiwanala.foundation.state;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ClientState {
@@ -7,8 +8,13 @@ public abstract class ClientState {
     protected int currentState;
     protected List<ClientStateListener> clientStateListenerList;
 
+    protected ClientState() {
+        this(0);
+    }
+
     protected ClientState(int defaultState) {
         this.currentState = defaultState;
+        this.clientStateListenerList = new ArrayList<>();
     }
 
     public int getState() {

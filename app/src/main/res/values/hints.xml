@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- label hints -->
+    <string name="lb_loading">Memuat</string>
+    <string name="lb_finger_in">Masuk</string>
+    <string name="lb_finger_out">Keluar</string>
+
     <!-- text hints -->
     <string name="tx_nip">NIP / Email</string>
     <string name="tx_password">Kata Sandi</string>
@@ -7,10 +12,18 @@
     <!-- button -->
     <string name="btn_sign_in">Masuk</string>
     <string name="btn_close">Tutup</string>
+    <string name="btn_ok">Pilih</string>
+    <string name="btn_month">Bulan</string>
+    <string name="btn_year">Tahun</string>
+
+    <!-- dialog -->
+    <string name="dlg_calendar_months">Bulan</string>
+    <string name="dlg_calendar_years">Tahun</string>
 
     <!-- error -->
     <string name="title_error">Kesalahan</string>
 
     <!-- login error -->
-    <string name="errors_login_server_error">Kesalahan Server. Coba kembali beberapa saat.</string>
+    <string name="errors_login_server_error">Kesalahan Server. Coba kembali beberapa saat atau hubungi administrator system.</string>
+    <string name="errors_login_client_error">Kesalahan Client. Client tidak dapat menerima data akun.</string>
 </resources>
