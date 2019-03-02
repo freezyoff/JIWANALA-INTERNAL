@@ -4,10 +4,12 @@
     <string name="lb_loading">Memuat</string>
     <string name="lb_finger_in">Masuk</string>
     <string name="lb_finger_out">Keluar</string>
+    <string name="tb_finger">Tanggal / Kehadiran</string>
 
     <!-- text hints -->
-    <string name="tx_nip">NIP / Email</string>
+    <string name="tx_nip">NIP</string>
     <string name="tx_password">Kata Sandi</string>
+    <string name="tx_month_year">Bulan / Tahun:</string>
 
     <!-- button -->
     <string name="btn_sign_in">Masuk</string>

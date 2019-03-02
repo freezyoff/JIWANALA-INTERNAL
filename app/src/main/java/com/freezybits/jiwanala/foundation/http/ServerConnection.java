@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -12,7 +13,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class ServerConnection extends AsyncTask<ServerConnection, Integer, ServerResponse> {
     URL url;
-    HttpsURLConnection connection;
+    HttpURLConnection connection;
     ServerRequestParameters parameters;
     ServerRequestHeaders headers;
     ServerResponse response;
@@ -33,9 +34,16 @@ public class ServerConnection extends AsyncTask<ServerConnection, Integer, Serve
         this.method = method;
     }
 
-    public HttpsURLConnection getConnection() throws IOException {
+    public boolean isScureConnection() {
+        String host = url.getHost();
+        return host.contains("https");
+    }
+
+    public HttpURLConnection getConnection() throws IOException {
         if (this.connection == null) {
-            this.connection = (HttpsURLConnection) this.url.openConnection();
+            if (isScureConnection())
+                this.connection = (HttpsURLConnection) this.url.openConnection();
+            else this.connection = (HttpURLConnection) this.url.openConnection();
         }
         return this.connection;
     }
@@ -58,7 +66,13 @@ public class ServerConnection extends AsyncTask<ServerConnection, Integer, Serve
 
     public void connect() {
         try {
-            HttpsURLConnection connection = this.getConnection();
+            HttpURLConnection connection = null;
+            if (isScureConnection()) {
+                connection = this.getConnection();
+            } else {
+                connection = this.getConnection();
+            }
+
             connection.setRequestMethod(this.method);
 
             if (this.getRequestParameters().getParameters().size() > 0) {

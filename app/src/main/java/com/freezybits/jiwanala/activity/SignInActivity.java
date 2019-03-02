@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,11 +20,12 @@ import com.freezybits.jiwanala.foundation.http.ServerResponseParameters;
 import com.freezybits.jiwanala.foundation.state.ClientSignInState;
 import com.freezybits.jiwanala.foundation.state.ClientStateListener;
 import com.freezybits.jiwanala.foundation.state.ClientStateManager;
+import com.freezybits.jiwanala.utils.ViewUtils;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class ActivityLogin extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     private Button btn;
     private EditText txNIP;
@@ -33,8 +35,9 @@ public class ActivityLogin extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (this.getActionBar() != null) this.getActionBar().hide();
-        if (this.getSupportActionBar() != null) this.getSupportActionBar().hide();
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        //if (this.getActionBar() != null) this.getActionBar().hide();
+        //if (this.getSupportActionBar() != null) this.getSupportActionBar().hide();
 
         SharedInstance.install(this.getApplication());
         appContext = this;
@@ -81,6 +84,7 @@ public class ActivityLogin extends AppCompatActivity {
 
                 con.addServerResponseListener(new LoginResponseListener());
                 con.execute();
+                ViewUtils.hideKeyboard(SignInActivity.this);
             }
         });
 
@@ -91,7 +95,7 @@ public class ActivityLogin extends AppCompatActivity {
             public void stateChange(Class cls, int oldState, int newState) {
                 Log.d("jiwanala", "ClientSignInState.stateChange(): " + clientStateManager.getClientSignInState().isSignedIn());
                 if (newState == ClientSignInState.SIGNED_IN) {
-                    ((ActivityLogin) appContext).showDashboardActivity();
+                    ((SignInActivity) appContext).showDashboardActivity();
                 } else {
                     showForm();
                 }
@@ -111,7 +115,7 @@ public class ActivityLogin extends AppCompatActivity {
         @Override
         public void serverResponseAccepted(int responseCode,
                                            ServerResponseParameters parameters) {
-            String message = "";
+            String message = null;
 
             if (responseCode == 200) {
                 String token = parameters.getJSONParameters("success").getString("token");
@@ -141,7 +145,9 @@ public class ActivityLogin extends AppCompatActivity {
                     message = getString(R.string.errors_login_client_error);
                 }
             } else {
-                message = parameters.getJSONParameters("error").getString("msg");
+                if (parameters.getJSONParameters("error") != null) {
+                    message = parameters.getJSONParameters("error").getString("msg");
+                }
             }
 
             //token null, posibly parse json error. not expected JSON format.
@@ -152,7 +158,7 @@ public class ActivityLogin extends AppCompatActivity {
             AlertDialog.Builder dialog = new AlertDialog.Builder(appContext);
             dialog.setCancelable(true);
             dialog.setTitle(R.string.title_error);
-            dialog.setMessage(parameters.getJSONParameters("error").getString("msg"));
+            dialog.setMessage(message);
             dialog.setPositiveButton(
                     R.string.btn_close,
                     new DialogInterface.OnClickListener() {
@@ -163,6 +169,7 @@ public class ActivityLogin extends AppCompatActivity {
 
             AlertDialog alert11 = dialog.create();
             alert11.show();
+            showForm();
         }
     }
 }

@@ -9,9 +9,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class ServerResponse {
     ArrayList<ServerResponseListener> listeners;
@@ -42,7 +41,7 @@ public class ServerResponse {
         return json;
     }
 
-    public void read(HttpsURLConnection connection) throws IOException {
+    public void read(HttpURLConnection connection) throws IOException {
 
         this.responseCode = connection.getResponseCode();
         Log.d("jiwanala", "ServerConnection.connect() -> responseCode :" + this.responseCode);

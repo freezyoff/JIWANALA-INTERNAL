@@ -1,5 +1,23 @@
 <resources>
 
-    <style name="jn_light" parent="Theme.AppCompat.Light"></style>
+    <style name="jn_light" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/backgroundColor_light</item>
+        <item name="colorPrimary">@color/color_primary</item>
+    </style>
 
+    <style name="jn_light.topNav" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@color/backgroundColor_dark</item>
+        <item name="android:textColor">@color/toolbar_textColor</item>
+    </style>
+
+    <style name="jn_light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="jn_light.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="jn_light.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

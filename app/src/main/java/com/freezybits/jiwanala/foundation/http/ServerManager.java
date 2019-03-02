@@ -7,7 +7,7 @@ import com.freezybits.jiwanala.foundation.SharedInstance;
 import com.freezybits.jiwanala.foundation.storage.DBManager;
 
 public class ServerManager {
-    Application application;
+    protected Application application;
 
     public ServerManager(Application app) {
         application = app;
@@ -41,6 +41,31 @@ public class ServerManager {
 
         return server;
     }
+
+    public ServerConnection getSignOutConnection() {
+        ServerConnection server = null;
+        ServerRequestHeaders headers = null;
+        ServerRequestParameters params = null;
+        try {
+            server = new ServerConnection(application.getString(R.string.server_url_logout));
+            server.setRequestMethod("POST");
+
+            headers = server.getRequestHeaders();
+            headers.addHeader("Accept", "application/json");
+            headers.addHeader("Authorization", getServerToken());
+            headers.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            params = server.getRequestParameters();
+            params.addParameter("token", getServerToken());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
+        return server;
+    }
+
 
     public ServerConnection getCheckTokenConnection() {
         ServerConnection server = null;

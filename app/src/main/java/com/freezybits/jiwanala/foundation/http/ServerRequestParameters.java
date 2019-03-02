@@ -5,11 +5,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class ServerRequestParameters {
     HashMap<String, String> parameters;
@@ -39,7 +38,7 @@ public class ServerRequestParameters {
         return postData.toString();
     }
 
-    public void write(HttpsURLConnection connection) throws IOException {
+    public void write(HttpURLConnection connection) throws IOException {
         OutputStream os = connection.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
         writer.write(this.encodeRequestParameters());

@@ -4,12 +4,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
 public class ServerResponseParameters {
 
-    JSONObject json;
+    protected JSONObject json;
 
-    public ServerResponseParameters(String string, JSONObject json) {
+    protected ServerResponseParameters(String string, JSONObject json) {
         this.json = json;
+    }
+
+    public boolean has(String key) {
+        return json.has(key);
+    }
+
+    public Iterator<String> getKeys() {
+        return json.keys();
     }
 
     public String getString(String key) {
@@ -78,8 +88,11 @@ public class ServerResponseParameters {
 
     public ServerResponseParameters getJSONParameters(String key) {
         try {
-            JSONObject obj = json.getJSONObject(key);
-            return new ServerResponseParameters(obj.toString(), obj);
+            if (json != null) {
+                JSONObject obj = json.getJSONObject(key);
+                return new ServerResponseParameters(obj.toString(), obj);
+            }
+            return null;
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

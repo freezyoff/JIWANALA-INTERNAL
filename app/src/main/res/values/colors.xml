@@ -3,13 +3,27 @@
     <color name="brand_name">#1c1c1c</color>
     <color name="brand_tag">#393939</color>
 
+    <!-- toolbar -->
+    <color name="toolbar_backgroundColor">#1A1919</color>
+    <color name="toolbar_textColor">#FFFEFEFE</color>
+
+    <color name="color_primary">#3DABFF</color>
+
+    <!-- Table Row Color -->
+    <color name="table_head">#1976D2</color>
+    <color name="table_row_holiday">#DDFF1500</color>
+    <color name="table_row_holiday_text">#fafafa</color>
+    <color name="table_row_consent">#FFD600</color>
+    <color name="table_row_warning">#F57F17</color>
+    <color name="table_row_warning_text">#fafafa</color>
+    <color name="table_row_zebra">#FFFFFFFF</color>
+
+
+    <color name="backgroundColor_light">#fafafa</color>
+    <color name="backgroundColor_dark">#161515</color>
+    <color name="backgroundColor_transparent">#00FEFEFE</color>
+
     <color name="accent_material_light">#4070ff</color>
     <color name="primary_material_light">#a7a7a7</color>
     <color name="background_material_light">#fafafa</color>
-
-    <!-- Table Row Color -->
-    <color name="table_row_holiday">#DDFF1500</color>
-    <color name="table_row_consent">#4AFF0000</color>
-    <color name="table_row_finger_summary">#F57F17</color>
-    <color name="table_row_zebra">#FFFFFFFF</color>
 </resources>

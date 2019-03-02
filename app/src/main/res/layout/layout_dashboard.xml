@@ -6,44 +6,55 @@
     <!-- loader -->
     <include layout="@layout/layout_spin_loader" />
 
-    <!-- layout -->
     <LinearLayout
-        android:id="@+id/lay_dashboard"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <include layout="@layout/layout_topnav" />
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:background="#424242"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/activity_horizontal_margin_small"
+            android:paddingEnd="@dimen/activity_horizontal_margin_small">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/calendar_24dp_black"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:text="@string/tx_month_year" />
 
             <Button
                 android:id="@+id/btn_month"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/btn_month" />
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="4dp"
+                android:text="@string/btn_month"
+                android:textColor="@color/color_primary" />
 
             <Button
                 android:id="@+id/btn_year"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/btn_year" />
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:text="@string/btn_year"
+                android:textColor="@color/color_primary" />
         </LinearLayout>
-
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TableLayout
-                android:id="@+id/table_attendance"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </TableLayout>
-
+            <include layout="@layout/layout_dashboard_content" />
         </ScrollView>
 
     </LinearLayout>

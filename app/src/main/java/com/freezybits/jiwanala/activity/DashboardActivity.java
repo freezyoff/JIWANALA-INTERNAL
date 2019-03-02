@@ -2,9 +2,9 @@ package com.freezybits.jiwanala.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -24,10 +25,12 @@ import com.freezybits.jiwanala.foundation.SharedInstance;
 import com.freezybits.jiwanala.foundation.http.ServerConnection;
 import com.freezybits.jiwanala.foundation.http.ServerResponseListener;
 import com.freezybits.jiwanala.foundation.http.ServerResponseParameters;
+import com.freezybits.jiwanala.foundation.state.ClientSignInState;
+import com.freezybits.jiwanala.foundation.state.ClientStateManager;
 import com.freezybits.jiwanala.utils.ViewUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.Iterator;
@@ -44,6 +47,7 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_dashboard);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         initFields();
         initViews();
@@ -106,7 +110,32 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
         btnYear.setInputType(InputType.TYPE_CLASS_NUMBER);
-        showDahboard();
+
+        //init topnav button signout
+        ImageButton btn = findViewById(R.id.btn_signout);
+        btn.setOnClickListener(SharedInstance.getSingOutButtonListener(this));
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DashboardActivity.this.showLoader();
+                ServerConnection connection = SharedInstance.getServerManager().getSignOutConnection();
+                connection.addServerResponseListener(new ServerResponseListener() {
+                    @Override
+                    public void serverResponseAccepted(int responseCode, ServerResponseParameters parameters) {
+                        if (responseCode == 200) {
+                            ClientStateManager manager = SharedInstance.getClientStateManager();
+                            manager.getClientSignInState().setState(ClientSignInState.SINGED_OUT);
+
+                            Intent intent = new Intent(DashboardActivity.this, SignInActivity.class);
+                            DashboardActivity.this.startActivity(intent);
+                            DashboardActivity.this.finish();
+                        }
+                    }
+                });
+                connection.execute();
+            }
+        });
+        toggleDahsboard(View.VISIBLE);
     }
 
     void showDahboard() {
@@ -116,7 +145,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     void showLoader() {
         toggleLoader(View.VISIBLE);
-        toggleDahsboard(View.GONE);
+        //toggleDahsboard(View.GONE);
     }
 
     void toggleLoader(int visibility) {
@@ -125,7 +154,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     void toggleDahsboard(int visibility) {
-        View layout = findViewById(R.id.lay_dashboard);
+        View layout = findViewById(R.id.lay_details);
         layout.setVisibility(visibility);
     }
 
@@ -136,7 +165,7 @@ public class DashboardActivity extends AppCompatActivity {
         if (dialog == null) {
             builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.dlg_calendar_months);
-            builder.setIcon(R.drawable.ic_calendar_24dp);
+            builder.setIcon(R.drawable.calendar_24dp_black);
 
             builder.setSingleChoiceItems(
                     this.monthsAdapater,
@@ -166,7 +195,7 @@ public class DashboardActivity extends AppCompatActivity {
         if (dialog == null) {
             builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.dlg_calendar_years);
-            builder.setIcon(R.drawable.ic_calendar_24dp);
+            builder.setIcon(R.drawable.calendar_24dp_black);
             builder.setSingleChoiceItems(
                     this.yearAdapter,
                     this.yearAdapter.getPosition(btnYear.getText().toString()),
@@ -211,276 +240,344 @@ public class DashboardActivity extends AppCompatActivity {
      * {
      * code:    int
      * msg:     {
-     * "month":        String,
-     * "year":         String,
-     * "records":      {JSONObject}
+     * "nip":       String,
+     * "month":     String,
+     * "year":      String,
+     * "records":   {JSONObject}
      * }
      * }
      * <p>
      * Signature of JSON "records"
      * "records": {
-     * "year":                 String,
-     * "month":                String,
-     * "day":                  String,
-     * "dayOfWeek":            String,
-     * "isHoliday":            true | false,
-     * "hasAttendance":        true | false,
-     * "hasConsent":           true | false,
-     * "holiday":              String | false,
-     * "attendance":           {JSONObject} if hasAttendance true | false
-     * "consent":              {JSONObject} if hasConsent true | false
+     * "year":                  String,
+     * "month":                 String,
+     * "day":                   String,
+     * "dayOfWeek":             String,
+     * "isHoliday":             true | false,
+     * "hasAttendance":         true | false,
+     * "hasConsent":            true | false,
+     * "hasWarning":            true | false,
+     * "holiday":               String | false,
+     * "attendance":            {JSONObject} if not hasAttendance null
+     * "consent":               {JSONObject} if not hasConsent null
+     * "warning":               {JSONObject} if not hasWarning null
      * }
      *
      * @param params - the JSON object in form ServerResponseParamater
      */
     void fillTableLayout(ServerResponseParameters params) throws JSONException {
         ServerResponseParameters msg = params.getJSONParameters("msg");
-        JSONObject recs = msg.getJSONObject("records");
+        ServerResponseParameters recs = msg.getJSONParameters("records");
 
-        Iterator<String> keys = recs.keys();
+        Iterator<String> keys = recs.getKeys();
         int index = 0;
         while (keys.hasNext()) {
-            JSONObject currentRecord = recs.getJSONObject(keys.next());
-            Log.d("jiwanala", "createRow: " + currentRecord);
+            index++;
+            ServerResponseParameters currentRecord = recs.getJSONParameters(keys.next());
+            Log.d("jiwanala", "index: " + index + " createRow: " + currentRecord);
 
-            int padding = getResources().getDimensionPixelOffset(R.dimen.activity_horizontal_margin_small);
-            TableRow row = new TableRow(this);
-            row.setOrientation(TableRow.VERTICAL);
-            row.addView(createTableRowColumn_columnNumber(currentRecord));
-            row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setPadding(padding, 0, padding, 0);
-            //if (index%2==0) {
-            row.setBackgroundColor(Color.WHITE);
-            //}
 
-            if (currentRecord.getBoolean("isHoliday")) {
-                row.addView(
-                        createTableRowColumn_columnHoliday(currentRecord.getString("holiday")),
-                        ViewUtils.createTableRowLayoutParams(false, false)
-                );
+            TableRow.LayoutParams tbWrap = ViewUtils.createTableRowLayoutParams(false, false);
+            TableRow row = createTableRow();
+
+            String day = currentRecord.getString("day");
+            day = day.length() < 2 ? "0" + day : day;
+            LinearLayout number = createTableRowNumber(day, currentRecord.getString("dayOfWeek"));
+            row.addView(number, tbWrap);
+
+            if (currentRecord.has("isHoliday") && currentRecord.getBoolean("isHoliday")) {
+                for (int i = 0; i < number.getChildCount(); i++) {
+                    TextView numberDay = (TextView) number.getChildAt(i);
+                    numberDay.setTextColor(getResources().getColor(R.color.table_row_holiday_text));
+                }
+
+                TableRow.LayoutParams trWrap1 = ViewUtils.createTableRowLayoutParams(false, false, 1.0f);
+                trWrap1.gravity = Gravity.CENTER_VERTICAL;
+
+                TextView holiday = createHolidayTableRow(currentRecord.getString("holiday"));
+                holiday.setTextColor(getResources().getColor(R.color.table_row_holiday_text));
+
+                row.addView(holiday, trWrap1);
                 row.setBackgroundResource(R.color.table_row_holiday);
-            } else if (currentRecord.getBoolean("hasAttendance")) {
-                row.addView(
-                        createTableRowColumn_columnFinger(currentRecord),
-                        ViewUtils.createTableRowLayoutParams(false, false)
-                );
-                row.setGravity(Gravity.CENTER_VERTICAL);
             } else {
+                LinearLayout.LayoutParams mainParams = ViewUtils.createLinearLayoutParams(false, false);
+                LinearLayout main = new LinearLayout(this);
+                main.setOrientation(LinearLayout.VERTICAL);
 
+                if (currentRecord.has("hasAttendance") && currentRecord.getBoolean("hasAttendance")) {
+                    //  add attendance data
+                    main.addView(createAttendanceTableRow(currentRecord.getJSONParameters("attendance")), mainParams);
+                    //row.setGravity(Gravity.CENTER_VERTICAL);
+                }
+
+                if (currentRecord.has("hasWarning") && currentRecord.getBoolean("hasWarning")) {
+                    LinearLayout warning = createAttendanceWarning(currentRecord.getJSONArray("warning"));
+                    main.addView(warning, mainParams);
+                }
+
+                if (currentRecord.has("hasConsent") && currentRecord.getBoolean("hasConsent")) {
+                    TextView text = createAttendanceConsent(currentRecord.getString("consent"));
+                    main.addView(text, mainParams);
+                    row.setBackgroundColor(getResources().getColor(R.color.table_row_consent));
+                }
+
+                TableRow.LayoutParams trWrap1 = ViewUtils.createTableRowLayoutParams(false, false, 1.0f);
+                trWrap1.gravity = Gravity.CENTER_VERTICAL;
+                row.addView(main, trWrap1);
             }
 
             TableLayout.LayoutParams layoutParams = ViewUtils.createTableLayoutParams(true, false);
             layoutParams.setMargins(0, 0, 0, 2);
             tableAttendance.addView(row, layoutParams);
             tableAttendance.setBackgroundColor(Color.GRAY);
-            index++;
         }
-    }
-
-    View createTableRowColumn_columnNumber(JSONObject data) throws JSONException {
-        TextView tx = new TextView(this);
-        int padding = getResources().getDimensionPixelOffset(R.dimen.activity_horizontal_margin_small);
-
-        tx.setText("01");
-        tx.setPadding(padding, padding, padding, padding);
-        tx.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        tx.setTypeface(null, Typeface.BOLD);
-        tx.setCompoundDrawablePadding(padding);
-
-        if (data.getBoolean("isHoliday")) {
-            Drawable icon = ViewUtils.getDrawable(this, R.drawable.flight_black_24dp);
-            icon.setTint(Color.parseColor("#FEFEFE"));
-            tx.setCompoundDrawables(null, null, null, icon);
-            tx.setTextColor(Color.parseColor("#FEFEFE"));
-        } else if (data.getBoolean("hasAttendance")) {
-            tx.setCompoundDrawables(null, null, null, ViewUtils.getDrawable(this, R.drawable.fingerprint_black_24dp));
-        } else {
-        }
-
-        try {
-            tx.setText(data.getString("day"));
-        } catch (JSONException ex) {
-            tx.setText(ex.getMessage());
-        }
-        return tx;
-    }
-
-    View createTableRowColumn_columnFinger(JSONObject data) throws JSONException {
-        /**
-         *  <LinearLayout
-         *      android:layout_height="wrap_content"
-         *      android:layout_width="wrap_content"
-         *      android:orientation="vertical">
-         *
-         *      <pre>
-         *         createDataLayout(JSONObject)
-         *      </pre>
-         *
-         *
-         *  </LinearLayout>
-         *  <LinearLayout
-         *      android:layout_height="wrap_content"
-         *      android:layout_width="wrap_content"
-         *      android:orientation="vertical">
-         *
-         *      <pre>
-         *         createDataLayout(JSONObject)
-         *      </pre>
-         *
-         *  </LinearLayout>
-         */
-        JSONObject currentData = data.getJSONObject("attendance");
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-
-        LinearLayout first = new LinearLayout(this);
-        first.addView(
-                createTableRowColumn_columnFinger_container(currentData),
-                ViewUtils.createLinearLayoutParams(false, false)
-        );
-        root.addView(first, ViewUtils.createLinearLayoutParams(false, false));
-
-        LinearLayout second = new LinearLayout(this);
-        String summary = currentData.getString("message");
-        if (summary.trim() != "null") {
-            second.addView(
-                    createTableRowColumn_columnFinger_containerSummary(summary),
-                    ViewUtils.createLinearLayoutParams(false, false)
-            );
-            root.addView(second, ViewUtils.createLinearLayoutParams(false, false));
-        }
-
-        return root;
     }
 
     /**
-     * JSON signature
-     * <p>
-     * "attendance":{
-     * <p>
-     * "id":       Integer,
-     * "fin":      String | NULL,
-     * "fout1":    String | NULL,
-     * "fout2":    String | NULL,
-     * "fout3":    String | NULL,
-     * "message":  String | NULL
-     * }
-     *
-     * @param data the json
-     * @return View
-     * @throws JSONException
+     * <TableRow
+     * android:layout_width="match_parent"
+     * android:layout_height="wrap_content"
+     * android:paddingLeft="8dp"
+     * android:paddingRight="8dp"
+     * android:paddingTop="8dp"
+     * android:paddingBottom="8dp">
      */
-    View createTableRowColumn_columnFinger_container(JSONObject data) throws JSONException {
-        /**
-         *  <LinearLayout
-         *      android:layout_height="wrap_content"
-         *      android:layout_width="wrap_content"
-         *      android:orientation="vertical">
-         *
-         *      <pre>
-         *          this inner html filled with 2 line of
-         *          createDataView(String, String)
-         *      </pre>
-         *
-         *
-         *  </LinearLayout>
-         *  <LinearLayout
-         *      android:layout_height="wrap_content"
-         *      android:layout_width="wrap_content"
-         *      android:orientation="vertical">
-         *
-         *      <pre>
-         *          this inner html filled with 2 line of
-         *          createDataView(String, String)
-         *      </pre>
-         *
-         *  </LinearLayout>
-         */
-        LinearLayout first = new LinearLayout(this);
-        LinearLayout second = new LinearLayout(this);
-        for (int i = 0; i < 2; i++) {
-            String labelFirst = i == 0 ? getString(R.string.lb_finger_in) + " :" : getString(R.string.lb_finger_out) + " 1 : ";
-            String labelSecond = i == 0 ? getString(R.string.lb_finger_out) + " 2 : " : getString(R.string.lb_finger_out) + " 3 : ";
-            String keyFirst = i == 0 ? "fin" : "fout1";
-            String keySecond = i == 0 ? "fout2" : "fout3";
-            String dataFirst = data.getString(keyFirst);
-            String dataSecond = data.getString(keySecond);
-
-            if (dataFirst.trim() != "null") {
-                first.addView(
-                        createTableRowColumn_columnFinger_containerData(labelFirst, dataFirst),
-                        ViewUtils.createLinearLayoutParams(false, false)
-                );
-            }
-
-            if (dataSecond.trim() != "null") {
-                second.addView(
-                        createTableRowColumn_columnFinger_containerData(labelSecond, dataSecond),
-                        ViewUtils.createLinearLayoutParams(false, false)
-                );
-            }
-        }
-
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.addView(first, ViewUtils.createLinearLayoutParams(false, false));
-        root.addView(second, ViewUtils.createLinearLayoutParams(false, false));
-        return root;
+    protected TableRow createTableRow() {
+        int dp4 = ViewUtils.transDimension(TypedValue.COMPLEX_UNIT_DIP, 4);
+        TableRow trow = new TableRow(this);
+        trow.setBackgroundColor(Color.WHITE);
+        trow.setPadding(0, dp4, 0, dp4);
+        return trow;
     }
 
-    View createTableRowColumn_columnFinger_containerData(String labelText, String valueText) {
-        /**
-         *  <LinearLayout
-         *      android:layout_width="wrap_content"
-         *      android:layout_height="wrap_content"
-         *      android:orientation="horizontal">
-         *  <TextView android:layout_width="wrap_content"
-         *      android:layout_height="wrap_content"
-         *      android:paddingTop="@dimen/activity_horizontal_margin_small"
-         *      android:paddingBottom="@dimen/activity_horizontal_margin_small"
-         *      android:paddingLeft="@dimen/activity_horizontal_margin_small"
-         *      android:width="70dp"
-         *      android:text=""/>                       ---> labelText
-         *  <TextView
-         *      android:layout_width="wrap_content"
-         *      android:layout_height="wrap_content"
-         *      android:padding="@dimen/activity_horizontal_margin_small"
-         *      android:text=""/>                       ---> valueText
-         *  </LinearLayout>
-         */
-        int padding = getResources().getDimensionPixelOffset(R.dimen.activity_horizontal_margin_small);
-        int dp70 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
-
-        TextView label = new TextView(this);
-        label.setWidth(dp70);
-        label.setPadding(padding, padding, 0, padding);
-        label.setText(labelText);
-
-        TextView value = new TextView(this);
-        value.setText(valueText);
+    /**
+     * <TextView
+     * android:text="01"
+     * android:textSize="24sp"
+     * android:gravity="center"
+     * android:paddingRight="8dp"
+     * />
+     */
+    protected LinearLayout createTableRowNumber(String day, String dayOfWeek) {
+        int dp8 = ViewUtils.transDimension(TypedValue.COMPLEX_UNIT_DIP, 8);
 
         LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(dp8, 0, 0, 0);
 
-        layout.addView(label, ViewUtils.createLinearLayoutParams(false, false));
-        layout.addView(value, ViewUtils.createLinearLayoutParams(false, false));
+        LinearLayout.LayoutParams layoutParams = ViewUtils.createLinearLayoutParams(false, false);
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+
+        TextView tday = new TextView(this);
+        tday.setText(day);
+        tday.setTextSize(18);
+
+        TextView tDayOfWeek = new TextView(this);
+        tDayOfWeek.setText(dayOfWeek);
+
+        layout.addView(tday, layoutParams);
+        layout.addView(tDayOfWeek, layoutParams);
         return layout;
     }
 
-    View createTableRowColumn_columnFinger_containerSummary(String summary) {
-        int padding = getResources().getDimensionPixelOffset(R.dimen.activity_horizontal_margin_small);
-        TextView sum = new TextView(this);
-        sum.setPadding(padding, 0, padding, padding);
-        sum.setText(summary);
-        sum.setTextColor(getResources().getColor(R.color.table_row_finger_summary));
-        return sum;
+    /**
+     * Holiday or OffScheduleDay layout
+     * <TableRow
+     * android:layout_width="match_parent"
+     * android:layout_height="wrap_content"
+     * android:paddingLeft="16dp"
+     * android:paddingRight="16dp"
+     * android:paddingTop="8dp"
+     * android:paddingBottom="8dp">
+     * <p>
+     * <!-- row number: already created -->
+     * <TextView
+     * android:layout_width="wrap_content"
+     * android:layout_height="wrap_content"
+     * android:text=""
+     * android:textSize="24sp"
+     * android:gravity="center"
+     * android:paddingRight="8dp"
+     * />
+     * <p>
+     * <!-- We create this -->
+     * <TextView
+     * android:layout_width="wrap_content"
+     * android:layout_height="wrap_content"
+     * android:text=""
+     * android:layout_gravity="center_vertical"
+     * android:paddingLeft="8dp"
+     * android:layout_weight="1"
+     * />
+     * </TableRow>
+     */
+    protected TextView createHolidayTableRow(String holidayText) {
+        int dp8 = ViewUtils.transDimension(TypedValue.COMPLEX_UNIT_DIP, 8);
+        TextView tview = new TextView(this);
+        tview.setText(holidayText);
+        tview.setPadding(dp8, 0, 0, 0);
+        return tview;
     }
 
-    View createTableRowColumn_columnHoliday(String holiday) {
-        int padding = getResources().getDimensionPixelOffset(R.dimen.activity_horizontal_margin_small);
-        TextView view = new TextView(this);
-        view.setText(holiday);
-        view.setPadding(padding, padding, padding, padding);
-        view.setTextColor(Color.parseColor("#FEFEFE"));
-        return view;
+    /**
+     * <LinearLayout
+     *      android:orientation="horizontal"
+     *      android:layout_width="wrap_content"
+     *      android:layout_height="wrap_content">
+     *          <LinearLayout
+     *              android:layout_weight="1"
+     *              android:orientation="vertical"
+     *              android:layout_width="wrap_content"
+     *              android:layout_height="wrap_content">
+     *              <TextView
+     *                  android:layout_width="wrap_content"
+     *                  android:layout_height="wrap_content"
+     *                  android:text="Libur Semester"
+     *                  android:layout_gravity="top"
+     *                  android:paddingLeft="8dp"
+     *                  android:paddingRight="8dp"
+     *                  android:paddingBottom="8dp"
+     *                  android:paddingTop="6dp" />
+     *              <TextView
+     *                  android:layout_width="wrap_content"
+     *                  android:layout_height="wrap_content"
+     *                  android:text="Libur Semester"
+     *                  android:layout_gravity="top"
+     *                  android:paddingLeft="8dp"
+     *                  android:paddingRight="8dp"
+     *                  android:paddingBottom="8dp"
+     *                  android:paddingTop="6dp" />
+     *          </LinearLayout>
+     *          <LinearLayout
+     *              android:orientation="vertical"
+     *              android:layout_weight="1"
+     *              android:layout_width="wrap_content"
+     *              android:layout_height="wrap_content">
+     *              <TextView
+     *                  android:layout_width="wrap_content"
+     *                  android:layout_height="wrap_content"
+     *                  android:text="Libur Semester"
+     *                  android:layout_gravity="top"
+     *                  android:paddingLeft="8dp"
+     *                  android:paddingRight="8dp"
+     *                  android:paddingBottom="8dp"
+     *                  android:paddingTop="6dp" />
+     *              <TextView
+     *                  android:layout_width="wrap_content"
+     *                  android:layout_height="wrap_content"
+     *                  android:text="Libur Semester"
+     *                  android:layout_gravity="top"
+     *                  android:paddingLeft="8dp"
+     *                  android:paddingRight="8dp"
+     *                  android:paddingBottom="8dp"
+     *                  android:paddingTop="6dp" />
+     *          </LinearLayout>
+     *  </LinearLayout>
+     *
+     * @param data - json attendance data
+     * @return View
+     */
+    protected LinearLayout createAttendanceTableRow(ServerResponseParameters data) {
+        int dp8 = ViewUtils.transDimension(TypedValue.COMPLEX_UNIT_DIP, 8);
+        int dp4 = ViewUtils.transDimension(TypedValue.COMPLEX_UNIT_DIP, 4);
+
+        LinearLayout main = new LinearLayout(this);
+        main.setOrientation(LinearLayout.HORIZONTAL);
+
+        TableRow.LayoutParams trWrap1 = ViewUtils.createTableRowLayoutParams(false, false, 1);
+        LinearLayout.LayoutParams lnWrap = ViewUtils.createLinearLayoutParams(false, false);
+
+        LinearLayout first = new LinearLayout(this);
+        first.setOrientation(LinearLayout.VERTICAL);
+
+        String text = data.getString("fin");
+        if (data.has("fin") && text != "null") {
+            TextView tview = new TextView(this);
+            tview.setText(text == "null" ? "" : text);
+            tview.setPadding(dp8, dp4, dp8, dp4);
+            first.addView(tview, lnWrap);
+        }
+
+        text = data.getString("fout2");
+        if (data.has("fout2") && text != "null") {
+            TextView tview = new TextView(this);
+            tview.setText(text == "null" ? "" : text);
+            tview.setPadding(dp8, dp4, dp8, dp4);
+            first.addView(tview, lnWrap);
+        }
+
+        LinearLayout second = new LinearLayout(this);
+        second.setOrientation(LinearLayout.VERTICAL);
+
+        text = data.getString("fout1");
+        if (data.has("fout1") && text != "null") {
+            TextView tview = new TextView(this);
+            tview.setText(text == "null" ? "" : text);
+            tview.setPadding(dp8, dp4, dp8, dp4);
+            second.addView(tview, lnWrap);
+        }
+
+        text = data.getString("fout3");
+        if (data.has("fout3") && text != "null") {
+            TextView tview = new TextView(this);
+            tview.setText(text == "null" ? "" : text);
+            tview.setPadding(dp8, dp4, dp8, dp4);
+            second.addView(tview, lnWrap);
+        }
+
+        main.addView(first, trWrap1);
+        main.addView(second, trWrap1);
+        return main;
+    }
+
+
+    /**
+     *  <LinearLayout
+     *      android:orientation="vertical"
+     *      android:layout_width="wrap_content"
+     *      android:layout_height="wrap_content">
+     *      <TextView
+     *          android:layout_width="wrap_content"
+     *          android:layout_height="wrap_content"
+     *          android:text="Warning warning warning"/>
+     *      <TextView
+     *          android:layout_width="wrap_content"
+     *          android:layout_height="wrap_content"
+     *          android:text="Warning warning warning"/>
+     *  </LinearLayout>
+     *
+     * @param params
+     * @return
+     */
+    protected LinearLayout createAttendanceWarning(JSONArray params) throws JSONException {
+        LinearLayout.LayoutParams mainParams = ViewUtils.createLinearLayoutParams(false, false);
+
+        LinearLayout main = new LinearLayout(this);
+        main.setOrientation(LinearLayout.VERTICAL);
+
+        int dp8 = ViewUtils.transDimension(TypedValue.COMPLEX_UNIT_DIP, 8);
+        int dp2 = ViewUtils.transDimension(TypedValue.COMPLEX_UNIT_DIP, 2);
+
+        mainParams.setMargins(dp8, dp2, dp8, dp2);
+
+        int count = params.length();
+        for (int i = 0; i < count; i++) {
+            TextView text = new TextView(this);
+            text.setText(params.getString(i));
+            text.setBackgroundColor(getResources().getColor(R.color.table_row_warning));
+            text.setTextColor(getResources().getColor(R.color.table_row_warning_text));
+            text.setPadding(dp8, dp2, dp8, dp2);
+            main.addView(text, mainParams);
+        }
+
+        return main;
+    }
+
+    protected TextView createAttendanceConsent(String text) {
+        int dp8 = ViewUtils.transDimension(TypedValue.COMPLEX_UNIT_DIP, 8);
+        TextView tview = new TextView(this);
+        tview.setText(text);
+        tview.setPadding(dp8, 0, 0, 0);
+        return tview;
     }
 }
