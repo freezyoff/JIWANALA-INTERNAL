@@ -35,7 +35,7 @@ import org.json.JSONException;
 import java.util.Calendar;
 import java.util.Iterator;
 
-public class DashboardActivity extends AppCompatActivity {
+public class AttendanceDetailActivity extends AppCompatActivity {
     ArrayAdapter<String> monthsAdapater;
     ArrayAdapter<String> yearAdapter;
     Button btnMonth;
@@ -46,7 +46,7 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_dashboard);
+        setContentView(R.layout.layout_attendance_detail);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         initFields();
@@ -117,7 +117,7 @@ public class DashboardActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DashboardActivity.this.showLoader();
+                AttendanceDetailActivity.this.showLoader();
                 ServerConnection connection = SharedInstance.getServerManager().getSignOutConnection();
                 connection.addServerResponseListener(new ServerResponseListener() {
                     @Override
@@ -126,9 +126,9 @@ public class DashboardActivity extends AppCompatActivity {
                             ClientStateManager manager = SharedInstance.getClientStateManager();
                             manager.getClientSignInState().setState(ClientSignInState.SINGED_OUT);
 
-                            Intent intent = new Intent(DashboardActivity.this, SignInActivity.class);
-                            DashboardActivity.this.startActivity(intent);
-                            DashboardActivity.this.finish();
+                            Intent intent = new Intent(AttendanceDetailActivity.this, SignInActivity.class);
+                            AttendanceDetailActivity.this.startActivity(intent);
+                            AttendanceDetailActivity.this.finish();
                         }
                     }
                 });
@@ -299,7 +299,7 @@ public class DashboardActivity extends AppCompatActivity {
 
                 row.addView(holiday, trWrap1);
                 row.setBackgroundResource(R.color.table_row_holiday);
-            } else {
+            } else if (currentRecord.has("hasAttendance") || currentRecord.has("hasWarning") || currentRecord.has("hasConsent")) {
                 LinearLayout.LayoutParams mainParams = ViewUtils.createLinearLayoutParams(false, false);
                 LinearLayout main = new LinearLayout(this);
                 main.setOrientation(LinearLayout.VERTICAL);
@@ -324,6 +324,8 @@ public class DashboardActivity extends AppCompatActivity {
                 TableRow.LayoutParams trWrap1 = ViewUtils.createTableRowLayoutParams(false, false, 1.0f);
                 trWrap1.gravity = Gravity.CENTER_VERTICAL;
                 row.addView(main, trWrap1);
+            } else {
+                Log.d("jiwanala", "Not Recorded yet");
             }
 
             TableLayout.LayoutParams layoutParams = ViewUtils.createTableLayoutParams(true, false);

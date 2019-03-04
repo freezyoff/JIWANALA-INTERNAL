@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.DashboardActivity"
+            android:name=".activity.AttendanceDetailActivity"
             android:label="@string/title_activity_dashboard" />
     </application>
 
